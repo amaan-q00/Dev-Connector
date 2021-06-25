@@ -173,7 +173,7 @@ router.delete("/:id/:comment_id", auth, async (req, res)=> {
         msg: 'Comment not found'
       })
     }
-    if (comment.user.toString() !== req.params.id) {
+    if (comment.user.toString() !== req.user.id) {
       return res.status(401).json({
         msg: 'Unauthorized user'
       })
