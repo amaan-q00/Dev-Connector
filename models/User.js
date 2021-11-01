@@ -14,12 +14,14 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  avatar: {
+  token:{
     type: String
   },
-  date: {
-    type: Date,
-    default: Date.now()
-    }
-  })
+  verified:{
+    type: Boolean,
+    default: false
+  }
+  }, {
+    timestamps: true
+})
   module.exports = mongoose.model('users', UserSchema)

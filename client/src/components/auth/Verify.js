@@ -12,16 +12,16 @@ import {
   setAlert
 } from '../../actions/alert'
 import {
-  login
+  verify
 } from '../../actions/auth'
-const Login = (props)=> {
+const Verify = (props)=> {
   const [formData,
     setformData] = useState({
-      email: '', password: ''
+      email: '', token: ''
     })
   const {
     email,
-    password,
+    token,
   } = formData
   const onChangeHandler = (e)=> {
     setformData({
@@ -30,7 +30,7 @@ const Login = (props)=> {
   }
   const submitHandler = async (e)=> {
     e.preventDefault()
-    props.login(email, password)
+    props.verify(email, token)
   }
 
   //redirect if login success
@@ -39,10 +39,10 @@ const Login = (props)=> {
   }
   return(
     <>
-    <h1 className="large text-primary">Sign In</h1>
+    <h1 className="large text-primary">Verify</h1>
 
     <p className="lead">
-      <i className="fas fa-user"></i> Log In to Your Account
+      <i className="fas fa-user"></i> Verify Your Account
     </p>
     <form className="form" onSubmit={submitHandler}>
         <div className="form-group">
@@ -50,28 +50,26 @@ const Login = (props)=> {
     </div>
         <div className="form-group">
           <input
-      type="password"
-      value={password}
+      type="text"
+      value={token}
       onChange={onChangeHandler}
-      placeholder="Password"
-      name="password"
-      minLength="6"
+      placeholder="Token"
+      name="token"
       />
     </div>
-        <input type="submit" className="btn btn-primary" value="Login" />
+        <input type="submit" className="btn btn-primary" value="Verify" />
     </form>
     <p className="my-1">
         Don't have an account? <Link to="/register">Sign Up</Link>
     </p>
      <p className="my-1">
-        Already registered? <Link to="/verify">Verify</Link>
-    </p>
-    < />
+        Already verified? <Link to="/login">Log In</Link>
+    </p>< />
   )
 }
 const mapStatetoProps = (state)=>({
   isAuthenticated: state.auth.isAuthenticated
 })
 export default connect(mapStatetoProps, {
-  login, setAlert
-})(Login)
+  verify, setAlert
+})(Verify)

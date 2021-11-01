@@ -3,28 +3,54 @@ const Post = require('../../models/Post')
 const auth = require('../../middleware/auth')
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
+const cloudinary = require("cloudinary").v2;
+require('../../config/cloudConfig')
+const {CloudUpload} = require("../../config/CloudUpload")
+const multer = require('multer')
 const {
   check,
   validationResult
 } = require('express-validator')
 const router = express.Router()
 
+const upload = multer({
+  dest: "public",
+    filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `files/admin-${file.fieldname}-${Date.now()}.${ext}`);
+    }
+})
+
 
 //create a new post
-router.post("/", [auth, [check('text', 'Text cannot be blank').not().isEmpty()]], async (req, res)=> {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
+router.post("/", [auth,upload.single('image')], async (req, res)=> {
+  let errors=[]
+ if (req.body.text.length<=0) errors.push({msg: ' Text is required'})
+  if (errors.length>0) {
     return res.status(400).send({
-      errors: errors.array()})
+      errors})
   }
   try {
     const user = await User.findById(req.user.id).select('-password')
+      var allowedExt=["image/jpg","image/png","image/jpeg"]
+    const [profile]= await Profile.find({user: req.user.id})
     const newPost = new Post({
       text: req.body.text,
       name: user.name,
-      avatar: user.avatar,
+      avatar: profile.avatar,
       user: req.user.id
     })
+     if (req.file){
+  if(allowedExt.includes(req.file.mimetype) && req.file.size <= 2000000){
+    var result = await CloudUpload(req.file.path)
+    newPost.image = result.url
+  }
+  else{
+    errors.push({msg: "Please Upload an image file  under 2 MB only"})
+    return res.status(400).send({
+      errors})
+  }
+  }
     const post = await newPost.save()
     res.json(post)
   }
@@ -32,7 +58,9 @@ router.post("/", [auth, [check('text', 'Text cannot be blank').not().isEmpty()]]
     console.error(err)
     res.status(500).send('Server error')
   }
-})
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+   })
 
 //get all posts
 router.get("/", auth, async (req, res)=> {
@@ -138,21 +166,35 @@ router.put("/unlike/:id", auth, async(req, res)=> {
 })
 
 //comment on a post
-router.post("/comment/:id", [auth, [check('text', 'Text cannot be blank').not().isEmpty()]], async (req, res)=> {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
+router.post("/comment/:id", [auth,upload.single('image')], async (req, res)=> {
+ let errors=[]
+ if (req.body.text.length<=0) errors.push({msg: ' Text is required'})
+  if (errors.length>0) {
     return res.status(400).send({
-      errors: errors.array()})
+      errors})
   }
   try {
     const user = await User.findById(req.user.id).select('-password')
+    var allowedExt=["image/jpg","image/png","image/jpeg"]
     const post = await Post.findById(req.params.id)
+    const [profile]= await Profile.find({user: req.user.id})
     const newComment = {
       text: req.body.text,
       name: user.name,
-      avatar: user.avatar,
+      avatar: profile.avatar,
       user: req.user.id
     }
+     if (req.file){
+  if(allowedExt.includes(req.file.mimetype) && req.file.size <= 2000000){
+    var result = await CloudUpload(req.file.path)
+    newComment.image = result.url
+  }
+  else{
+    errors.push({msg: "Please Upload an image file  under 2 MB only"})
+    return res.status(400).send({
+      errors})
+  }
+  }
     post.comments.unshift(newComment)
     await post.save()
     res.json(post.comments)

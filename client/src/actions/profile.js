@@ -89,12 +89,8 @@ export const getRepos = (username)=> async dispatch=> {
 //create and update profile
 export const createProfile = (formData, history, edit = false)=>async dispatch => {
   try {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    const res = await axios.post('/api/profile', formData, config)
+const config = { headers: { 'Content-Type': `multipart/form-data`} }
+    const res = await axios.post('/api/profile', formData,config)
     dispatch ({
       type: GET_PROFILE,
       payload: res.data

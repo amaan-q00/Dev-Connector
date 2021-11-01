@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom'
 import Login from '../auth/Login'
 import Register from '../auth/Register'
+import Verify from '../auth/Verify'
 import Alert from '../layout/Alert'
 import Dashboard from '../dashboard/Dashboard'
 import NotFound from '../layout/NotFound'
@@ -25,6 +26,7 @@ const Routes=()=>{
       <Switch>
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
+        <Route exact path="/verify" component={Verify} />
         <Route exact path="/profile/:id" component={ProfileInfo} />
         <Route exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/dashboard" component={Dashboard} />

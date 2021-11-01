@@ -1,17 +1,30 @@
 const express = require('express')
 const request = require('request')
+const multer= require('multer')
 const auth = require('../../middleware/auth')
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const Post = require('../../models/Post')
-require('dotenv').config({
-  path: './sample.env'
-})
+const cloudinary = require("cloudinary").v2;
+require('../../config/cloudConfig')
+const {CloudUpload} = require("../../config/CloudUpload")
+const {
+    sendCancelationEmail
+} = require('../../config/email')
 const {
   check,
   validationResult
 } = require('express-validator')
 const router = express.Router()
+
+const upload = multer({
+  dest: "public",
+    filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `files/admin-${file.fieldname}-${Date.now()}.${ext}`);
+    }
+})
+
 
 //get my profile
 router.get("/me", auth, async (req, res)=> {
@@ -28,14 +41,14 @@ router.get("/me", auth, async (req, res)=> {
 })
 
 //create and update profiles
-router.post('/', [auth, [
-  check('status', 'Status is required').not().isEmpty(),
-  check('skills', 'Skills are required').not().isEmpty(),
-]], async(req, res)=> {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
+router.post('/', [auth,upload.single('avatar')], async(req, res)=> {
+
+ let errors=[]
+ if (req.body.status.length<=0) errors.push({msg: 'Status is required'})
+ if (req.body.skills.length<=0) errors.push({msg: 'Skills are required'})
+  if (errors.length>0) {
     return res.status(400).send({
-      errors: errors.array()})
+      errors})
   }
   const {
     company,
@@ -53,6 +66,19 @@ router.post('/', [auth, [
   } = req.body
   const fields = {}
   fields.user = req.user.id
+  var allowedExt=["image/jpg","image/png","image/jpeg"]
+  if (req.file){
+  if(allowedExt.includes(req.file.mimetype) && req.file.size <= 2000000){
+    var result = await CloudUpload(req.file.path)
+    fields.avatar = result.url
+  }
+  else{
+    errors.push({msg: "Please Upload an image file  under 2 MB only"})
+    return res.status(400).send({
+      errors})
+  }
+  }
+  
   if (company) fields.company = company
   if (location) fields.location = location
   if (website) fields.website = website
@@ -62,12 +88,11 @@ router.post('/', [auth, [
   if (skills) {
     fields.skills = skills.split(',').map(skill=>skill.trim())
   }
-  fields.social = {}
-  if (facebook) fields.social.facebook = facebook
-  if (youtube) fields.social.youtube = youtube
-  if (instagram) fields.social.instagram = instagram
-  if (linkedin) fields.social.linkedin = linkedin
-  if (twitter) fields.social.twitter = twitter
+  if (facebook) fields.facebook = facebook
+  if (youtube) fields.youtube = youtube
+  if (instagram) fields.instagram = instagram
+  if (linkedin) fields.linkedin = linkedin
+  if (twitter) fields.twitter = twitter
   try {
     let profile = await Profile.findOne({
       user: req.user.id
@@ -84,13 +109,17 @@ router.post('/', [auth, [
     }
     profile = new Profile(fields)
     await profile.save()
+       
     return res.json(profile)
+
   }
   catch(err) {
     console.error(err)
     res.status(500).send('Server error')
   }
-})
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+   })
 
 //get all profiles
 router.get("/", async (req, res)=> {
@@ -112,8 +141,7 @@ router.get("/user/:id", async (req, res)=> {
     })
     res.json(profile)
   } catch (err) {
-    console.error(err)
-    if (err.kind == 'ObjectId') {
+    if (err.kind === 'ObjectId') {
       return res.status(400).send({
         msg: 'There is no profile for this user'
       })
@@ -136,12 +164,14 @@ router.delete("/", auth, async (req, res)=> {
       user: req.user.id
     })
     //remove user
-    await User.findOneAndRemove({
+    let user=await User.findOneAndRemove({
       _id: req.user.id
     })
+    sendCancelationEmail(user.email,user.name)
     res.json({
       msg: 'User deleted'
     })
+    
   } catch (err) {
     console.error(err)
     res.status(500).send('Server error')

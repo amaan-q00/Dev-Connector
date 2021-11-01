@@ -74,12 +74,8 @@ try {
 }
 
 //add oost
-export const addPost=formData=>async dispatch=>{
-const config={
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  }
+export const addPost=(formData)=>async dispatch=>{
+const config = { headers: { 'Content-Type': `multipart/form-data`} }
 try {
   
     let res= await axios.post(`/api/posts`,formData,config)
@@ -89,6 +85,10 @@ try {
     })
     dispatch(setAlert('Post created','success'))
   } catch (e) {
+    const errors = e.response.data.errors
+    if (errors) {
+      errors.forEach(error=>dispatch(setAlert(error.msg, 'danger')))
+    }
        dispatch({
       type: POST_ERROR,
       payload: {
@@ -117,11 +117,7 @@ export const getPost=id=>async dispatch=>{
 }
 
 export const addComment=(postId,formData)=>async dispatch=>{
-const config={
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  }
+const config = { headers: { 'Content-Type': `multipart/form-data`} }
 try {
     let res= await axios.post(`/api/posts/comment/${postId}`,formData,config)
     dispatch({
@@ -130,6 +126,10 @@ try {
     })
     dispatch(setAlert("Comment Added","success"))
   } catch (e) {
+    const errors = e.response.data.errors
+    if (errors) {
+      errors.forEach(error=>dispatch(setAlert(error.msg, 'danger')))
+    }
        dispatch({
       type: POST_ERROR,
       payload: {

@@ -48,6 +48,12 @@ router.post("/login", [
           msg: 'Invalid credentials!'
         }]})
     }
+        if (!user.verified) {
+      return res.status(400).json({
+        errors: [{
+          msg: 'Verify your account to continue!'
+        }]})
+    }
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return res.status(400).json({

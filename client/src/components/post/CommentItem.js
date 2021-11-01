@@ -12,7 +12,7 @@ const CommentItem=({
   removeComment,
   auth,
   postId,
-  comment:{_id,text,name,avatar,user,date}
+  comment:{_id,text,name,image,avatar,user,date}
 })=>{
   return (
      <div className="post bg-white p-1 my-1">
@@ -20,15 +20,15 @@ const CommentItem=({
         <div>
 
           <Link to={`/profile/${user}`}>
-            <img
-              className="round-img"
-              src={avatar}
-              alt=""
-            />
+             {(avatar) ? <img src={avatar} alt="" /> : 
+              <i className="fa fa-user fa-5x m-1"  style={{color: 'black'}}/>
+
+  }
             <h4>{name}</h4>
           </Link>
         </div>
         <div>
+        {image &&  <img src={image} style={{width: "100%", height: "100%"}} alt="" />}
           <p className="my-1">
             {text}
           </p>

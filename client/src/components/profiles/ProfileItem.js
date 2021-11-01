@@ -5,8 +5,9 @@ import {
 const ProfileItem = ({profile:
  {
     user: {
-      _id, name, avatar
+      _id, name
     },
+    avatar,
     status,
     company,
     location,
@@ -16,7 +17,9 @@ const ProfileItem = ({profile:
 
   return (
     <div className="profile bg-light">
-    <img src={avatar} alt="" className="round-img" />
+      {(avatar) ? <img src={avatar} alt="" className="round-img" /> : 
+  <i className="fa fa-user fa-10x round-img m-2" />
+  }
     <div>
     <p>
       {name}

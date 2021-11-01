@@ -4,20 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":"node index.js",
-    "heroku-postbuild":"NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "start": "node index.js",
+    "dev": "env-cmd -f ./test.env nodemon -e js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^7.5.0",
     "bcryptjs": "^2.4.3",
-    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.11.1",
-    "gravatar": "^1.8.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.12",
-    "request": "^2.88.2"
+    "multer": "^1.4.3",
+    "request": "^2.88.2",
+    "cloudinary": "^1.27.1"
   }
 }

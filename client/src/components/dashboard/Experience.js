@@ -23,8 +23,15 @@ const Experience = ({
     </tr>
   ))
   return(
+    experience.length<=0 ? 
     <>
-    <h1 className="my-2">Experience Credentials</h1>
+     <h2 className="my-2">Experience Credentials</h2>
+    <p>
+      No experience details found
+            </p>
+    </> :
+    <>
+    <h2 className="my-2">Experience Credentials</h2>
     <table className="table">
       <thead>
       <tr>

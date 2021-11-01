@@ -40,6 +40,7 @@ const Navbar = (props)=> {
     <li><Link to="/profiles">Developers</Link></li>
     <li><Link to="/register">Register</Link></li>
     <li><Link to="/login">Login</Link></li>
+     <li><Link to="/verify">Verify</Link></li>
     </ul>
   )
   return(

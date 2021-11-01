@@ -5,6 +5,9 @@ const ProfileSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users'
   },
+  avatar:{
+    type: String
+  },
   company: {
     type: String
   },
@@ -55,7 +58,7 @@ const ProfileSchema = new Schema({
         type: String
       }
     }],
-    education: [{
+  education: [{
       school: {
         type: String,
         required: true
@@ -83,26 +86,21 @@ const ProfileSchema = new Schema({
           type: String
         }
       }],
-      social: [{
-        facebook: {
+  facebook: {
           type: String
         },
-        instagram: {
+  instagram: {
           type: String
         },
-        Youtube: {
+  youtube: {
           type: String
         },
-        linkedin: {
+  linkedin: {
           type: String
         },
-        twitter: {
+  twitter: {
           type: String
-        },
-      }],
-      date: {
-        type: Date,
-        default: Date.now()
         }
-      })
+      
+      },{timestamps: true})
     module.exports = mongoose.model('profiles', ProfileSchema)

@@ -15,7 +15,8 @@ import {
   register
 } from '../../actions/auth'
 
-const Register = (props)=> {
+const Register = ({register,isAuthenticated,history,setAlert})=> {
+  //console.log(props)
   const [formData,
     setformData] = useState({
       name: '', email: '', password: '', password2: ''
@@ -34,15 +35,15 @@ const Register = (props)=> {
   const submitHandler = async (e)=> {
     e.preventDefault()
     if (password !== password2) {
-      props.setAlert('Passwords not matched', 'danger')
+      setAlert('Passwords not matched', 'danger')
     } else {
-      props.register({
-        name, email, password
+      register({
+        name, email, password,history
       })
     }
   }
   //success redirect
-  if (props.isAuthenticated) {
+  if (isAuthenticated) {
     return <Redirect to='/dashboard' />
   }
   return(
@@ -58,10 +59,7 @@ const Register = (props)=> {
     </div>
         <div className="form-group">
           <input type="email" value={email} onChange={onChangeHandler} placeholder="Email Address" name="email" />
-          <small className="form-text"
-        >This site uses Gravatar so if you want a profile image, use a
-            Gravatar email</small
-      >
+         
     </div>
         <div className="form-group">
           <input
@@ -87,7 +85,11 @@ const Register = (props)=> {
     </form>
     <p className="my-1">
         Already have an account? <Link to="/login">Sign In</Link>
-    </p> < />
+    </p> 
+     <p className="my-1">
+        Already registered? <Link to="/verify">Verify</Link>
+    </p>
+    < />
   )
 }
 const mapStatetoProps = (state)=>({

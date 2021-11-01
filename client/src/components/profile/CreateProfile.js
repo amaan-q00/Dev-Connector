@@ -5,6 +5,7 @@ import React, {
 import {
   connect
 } from 'react-redux'
+import {Spinner} from '../layout/Spinner'
 import {
   createProfile
 } from '../../actions/profile'
@@ -15,8 +16,10 @@ import {
 const CreateProfile = ({
   createProfile, history
 })=> {
+  const [loading,setLoading]= useState(false)
   const [formData,
     setFormData] = useState({
+      avatar: null,
       company: '',
       website: '',
       location: '',
@@ -31,6 +34,7 @@ const CreateProfile = ({
       youtube: ''
     })
   const {
+    avatar,
     company,
     website,
     location,
@@ -52,11 +56,32 @@ const CreateProfile = ({
       ...formData, [e.target.name]: e.target.value
     })
   }
-  const submitHandler = (e)=> {
-    e.preventDefault()
-    createProfile(formData, history)
+    const avatarChange=(e)=>{
+          setFormData({
+           ...formData, avatar: e.target.files[0]
+          })
   }
-  return (
+  const submitHandler = async (e)=> {
+    e.preventDefault()
+    setLoading(true)
+  const fd = new FormData();
+   fd.append('avatar',avatar)
+   fd.append('company',company);
+   fd.append('website', website);
+   fd.append('location',location);
+   fd.append('status',status);
+   fd.append('skills', skills);
+   fd.append('githubusername',githubusername);
+   fd.append('bio',bio);
+   fd.append('twitter',twitter);
+   fd.append('facebook',facebook);
+   fd.append('instagram',instagram);
+   fd.append('linkedin',linkedin)
+   fd.append('youtube',youtube)
+    await createProfile(fd, history)
+    setLoading(false)
+  }
+  return (loading ? <Spinner /> :
     <Fragment>
 
       <h1 className="large text-primary">
@@ -69,9 +94,15 @@ const CreateProfile = ({
     </p>
       <small>* = required field</small>
       <form className="form" onSubmit={submitHandler}>
+      <div className="form-group">
+          <input type="file" accept="image/*" name="avatar" onChange={avatarChange} />
+          <small className="form-text"
+          >Please upload a picture (2 MB or less)</small
+        >
+        </div>
         <div className="form-group">
           <select name="status" value={status} onChange={changeHandler}>
-            <option value="0">* Select Professional Status</option>
+            <option value="">* Select Professional Status</option>
             <option value="Developer">Developer</option>
             <option value="Junior Developer">Junior Developer</option>
             <option value="Senior Developer">Senior Developer</option>
@@ -162,7 +193,8 @@ const CreateProfile = ({
         <Link className="btn btn-light my-1" to="/dashboard">Go Back</Link>
     </form>
     </Fragment>
-  )
+    )
+  
 }
 
 export default connect(null, {

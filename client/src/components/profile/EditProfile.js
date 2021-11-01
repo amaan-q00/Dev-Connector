@@ -6,6 +6,7 @@ import React, {
 import {
   connect
 } from 'react-redux'
+import {Spinner} from '../layout/Spinner'
 import {
   createProfile,
   getCurrentProfile
@@ -21,8 +22,10 @@ const EditProfile = ({
   createProfile, history,
   getCurrentProfile
 })=> {
-  const [formData,
+  const [cloading,setLoading]= useState(false)
+  const [someData,
     setFormData] = useState({
+      avatar: null,
       company: '',
       website: '',
       location: '',
@@ -37,6 +40,7 @@ const EditProfile = ({
       youtube: ''
     })
   const {
+    avatar,
     company,
     website,
     location,
@@ -49,7 +53,7 @@ const EditProfile = ({
     instagram,
     linkedin,
     youtube
-  } = formData
+  } = someData
   const [displaySocial,
     setSocialDisplay] = useState(false)
   useEffect(()=> {
@@ -63,24 +67,48 @@ const EditProfile = ({
       skills: loading || !profile.skills ? '': profile.skills.join(','),
       bio: loading || !profile.bio ? '': profile.bio,
       githubusername: loading || !profile.githubusername ? '': profile.githubusername,
-      youtube: loading || !profile.social ? '': profile.social.youtube,
-      instagram: loading || !profile.social ? '': profile.social.instagram,
-      linkedin: loading || !profile.social ? '': profile.social.linkedin,
-      facebook: loading || !profile.social ? '': profile.social.facebook,
-      twitter: loading || !profile.social ? '': profile.social.twitter
+      youtube: loading || !profile.youtube ? '': profile.youtube,
+      instagram: loading || !profile.instagram ? '': profile.instagram,
+      linkedin: loading || !profile.linkedin ? '': profile.linkedin,
+      facebook: loading || !profile.facebook ? '': profile.facebook,
+      twitter: loading || !profile.twitter ? '': profile.twitter
     })
   }, [loading,getCurrentProfile])
 
   const changeHandler = (e)=> {
     setFormData({
-      ...formData, [e.target.name]: e.target.value
+      ...someData, [e.target.name]: e.target.value
     })
   }
-  const submitHandler = (e)=> {
-    e.preventDefault()
-    createProfile(formData, history, true)
+  const avatarChange=(e)=>{
+          setFormData({
+           ...someData, avatar: e.target.files[0]
+            
+          })
   }
-  return (
+  const submitHandler = async (e)=> {
+    e.preventDefault()
+    setLoading(true)
+   const formData = new FormData();
+   formData.append('avatar',avatar)
+   formData.append('company',company);
+   formData.append('website', website);
+   formData.append('location',location);
+   formData.append('status',status);
+   formData.append('skills', skills);
+   formData.append('githubusername',githubusername);
+   formData.append('bio',bio);
+   formData.append('twitter',twitter);
+   formData.append('facebook',facebook);
+   formData.append('instagram',instagram);
+   formData.append('linkedin',linkedin)
+   formData.append('youtube',youtube)
+  await createProfile(formData, history, true)
+  setLoading(false)
+  
+    
+  }
+  return  (cloading ? <Spinner /> :
     <Fragment>
 
       <h1 className="large text-primary">
@@ -92,10 +120,16 @@ const EditProfile = ({
         profile stand out
     </p>
       <small>* = required field</small>
-      <form className="form" onSubmit={submitHandler}>
+      <form className="form" id="form" onSubmit={submitHandler}>
+            <div className="form-group">
+          <input type="file" accept="image/*" name="avatar" onChange={avatarChange} />
+          <small className="form-text"
+          >Please upload a picture (2 MB or less)</small
+        >
+        </div>
         <div className="form-group">
           <select name="status" value={status} onChange={changeHandler}>
-            <option value="0">* Select Professional Status</option>
+            <option value="">* Select Professional Status</option>
             <option value="Developer">Developer</option>
             <option value="Junior Developer">Junior Developer</option>
             <option value="Senior Developer">Senior Developer</option>

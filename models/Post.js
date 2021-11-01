@@ -5,6 +5,9 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users'
   },
+  image:{
+    type: String
+  },
   text: {
     type: String,
     required: true
@@ -26,6 +29,9 @@ const PostSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'users'
     },
+    image:{
+      type: String
+    },
     text: {
       type: String,
       required: true
@@ -35,11 +41,9 @@ const PostSchema = new Schema({
     },
     avatar: {
       type: String
-    },
-    date: {
-      type: Date,
-      default: Date.now()
-      }
-    }]
+    }
+    }, {
+    timestamps: true
+}]
   })
   module.exports = mongoose.model('posts', PostSchema)

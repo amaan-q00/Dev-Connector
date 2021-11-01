@@ -3,7 +3,6 @@ import {
   setAlert
 } from './alert'
 import {
-  REGISTER_SUCCESS,
   REGISTER_FAIL,
   USER_LOADED,
   AUTH_FAILED,
@@ -35,7 +34,7 @@ export const loadUser = ()=>async dispatch => {
   }
 }
 export const register = ({
-  name, email, password
+  name, email, password,history
 })=> async dispatch => {
   const config = {
     headers: {
@@ -46,13 +45,9 @@ export const register = ({
     name, email, password
   })
   try {
-    let res = await axios.post('/api/users', body, config)
-    dispatch({
-      type: REGISTER_SUCCESS,
-      payload: res.data
-    })
-    dispatch (loadUser())
-    dispatch(setAlert('User Registered Successfully', 'success'))
+    await axios.post('/api/users', body, config)
+    dispatch(setAlert('User Registered Successfully,check your mail for verification token', 'success'))
+    history.push('/verify')
   } catch (e) {
     const errors = e.response.data.errors
     if (errors) {
@@ -78,6 +73,35 @@ export const login = (
   })
   try {
     let res = await axios.post('/api/auth/login', body, config)
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: res.data
+    })
+    dispatch(loadUser())
+  } catch (e) {
+    const errors = e.response.data.errors
+    if (errors) {
+      errors.forEach(error=>dispatch(setAlert(error.msg, 'danger')))
+    }
+    dispatch({
+      type: LOGIN_FAIL
+    })
+  }
+}
+
+export const verify = (
+  email, token, history
+)=> async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  const body = JSON.stringify({
+    email, token
+  })
+  try {
+    let res = await axios.post('/api/users/verify', body, config)
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data

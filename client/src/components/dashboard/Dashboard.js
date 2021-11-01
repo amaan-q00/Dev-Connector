@@ -23,7 +23,6 @@ const Dashboard = ({
     user
   }, profile
 })=> {
-
   useEffect(()=> {
     getCurrentProfile()
   }, [getCurrentProfile])
@@ -35,6 +34,9 @@ const Dashboard = ({
   <i className="fas fa-user"></i>{" "}Welcome {user && user.name}
     </p>
   {(profile.profile !== null) ? <Fragment>
+  {(profile.profile.avatar) ? <img src={profile.profile.avatar} alt="" style={{width:"50%",height:"50%"}} className="m-2" /> : 
+  <i className="fa fa-user fa-10x round-img m-2"  />
+  }
   <DashboardActions />
   <Experience experience={profile.profile.experience} />
   <Education education={profile.profile.education} />

@@ -6,22 +6,23 @@ import {addLike, removeLike,deletePost} from '../../actions/post'
 import {Link} from 'react-router-dom'
 import Moment from 'react-moment'
 
-const PostItem=({addLike,removeLike,deletePost,auth,post:{_id,name,avatar,text,likes,comments,user,date},showActions})=>{
+const PostItem=({addLike,removeLike,deletePost,auth,post:{_id,name,image,text,likes,comments,user,date,avatar},showActions})=>{
   return (
     <div className="post bg-white p-1 my-1">
 
           <div>
 
             <Link to={`/profile/${user}`}>
-              <img
-                className="round-img"
-                src={avatar}
-                alt=""
-              />
+
+             {(avatar) ? <img src={avatar} alt="" /> : 
+              <i className="fa fa-user fa-5x m-1"  style={{color: 'black'}}/>
+
+  }
               <h4>{name}</h4>
             </Link>
           </div>
           <div>
+          {image &&  <img src={image} alt="" style={{width: "100%", height: "100%"}} />}
             <p className="my-1">
              {text}
             </p>

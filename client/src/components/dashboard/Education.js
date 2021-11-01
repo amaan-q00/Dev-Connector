@@ -22,8 +22,15 @@ const Education = ({
     </tr>
   ))
   return(
+    education.length<=0 ? 
     <>
-    <h1 className="my-2">Education Credentials</h1>
+     <h2 className="my-2">Education Credentials</h2>
+    <p>
+      No education details found
+            </p>
+    </> :
+    <>
+    <h2 className="my-2">Education Credentials</h2>
     <table className="table">
       <thead>
       <tr>
