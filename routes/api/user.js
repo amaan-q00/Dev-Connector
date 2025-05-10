@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 const { sendWelcomeEmail, sendForgetEmail } = require("../../config/email");
 const router = express.Router();
-
+const TEMP_TOKEN=123456
 //create new user
 router.post(
   "/",
@@ -42,7 +42,8 @@ router.post(
           ],
         });
       }
-      let token = Math.floor(100000 + Math.random() * 900000);
+      let token =TEMP_TOKEN
+      // let token = Math.floor(100000 + Math.random() * 900000);
       user = new User({
         name,
         email,
@@ -151,7 +152,8 @@ router.post(
           ],
         });
       }
-      let newToken = Math.floor(100000 + Math.random() * 900000);
+      let newToken = TEMP_TOKEN
+      // let newToken = Math.floor(100000 + Math.random() * 900000);
       user.token = newToken;
       await sendForgetEmail(user.email, user.name, newToken);
 
